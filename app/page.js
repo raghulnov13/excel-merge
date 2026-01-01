@@ -7,6 +7,22 @@ export default function Home() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+
+    setFiles((prev) => {
+      const merged = [...prev, ...newFiles];
+
+      // remove duplicate file names
+      return merged.filter(
+        (file, index, self) =>
+          index === self.findIndex((f) => f.name === file.name)
+      );
+    });
+
+    e.target.value = null; // allow selecting same file again
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -16,9 +32,7 @@ export default function Home() {
     }
 
     const formData = new FormData();
-    for (let file of files) {
-      formData.append("files", file);
-    }
+    files.forEach((file) => formData.append("files", file));
 
     setLoading(true);
 
@@ -49,20 +63,32 @@ export default function Home() {
     <div className="container">
       <div className="card">
         <h1>Excel Merge Tool</h1>
-        <p>Merge 13 or more Excel files into one report</p>
+        <p>Merge multiple Excel files into one report</p>
 
         <form onSubmit={handleSubmit}>
           <input
             type="file"
             multiple
             accept=".xlsx,.xls"
-            onChange={(e) => setFiles(e.target.files)}
+            onChange={handleFileChange}
           />
+
+          <div className="file-count">
+            Selected Files: {files.length}
+          </div>
+
+          <ul className="file-list">
+            {files.map((file, index) => (
+              <li key={index}>{file.name}</li>
+            ))}
+          </ul>
 
           <button type="submit" disabled={loading}>
             {loading ? "Merging..." : "Merge & Download"}
           </button>
         </form>
+
+        <span className="footer-text">Internal Tool – Tata Electronics</span>
       </div>
     </div>
   );
