@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./page.css";
 
 export default function Home() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
@@ -20,7 +21,8 @@ export default function Home() {
       );
     });
 
-    e.target.value = null; // allow selecting same file again
+    // allow selecting same file again
+    e.target.value = null;
   };
 
   const handleSubmit = async (e) => {
@@ -36,27 +38,37 @@ export default function Home() {
 
     setLoading(true);
 
-    const res = await fetch("/api/merge", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("/api/merge", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!res.ok) {
-      alert("Merge failed");
+      if (!res.ok) {
+        alert("Merge failed");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "merged-report.xlsx";
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+
+      // ✅ CLEAR AFTER SUCCESS
+      setFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "merged-report.xlsx";
-    a.click();
-
-    window.URL.revokeObjectURL(url);
-    setLoading(false);
   };
 
   return (
@@ -67,28 +79,35 @@ export default function Home() {
 
         <form onSubmit={handleSubmit}>
           <input
+            ref={fileInputRef}
             type="file"
             multiple
             accept=".xlsx,.xls"
             onChange={handleFileChange}
           />
 
-          <div className="file-count">
-            Selected Files: {files.length}
-          </div>
+          {files.length > 0 && (
+            <>
+              <div className="file-count">
+                Selected Files: {files.length}
+              </div>
 
-          <ul className="file-list">
-            {files.map((file, index) => (
-              <li key={index}>{file.name}</li>
-            ))}
-          </ul>
+              <ul className="file-list">
+                {files.map((file, index) => (
+                  <li key={index}>{file.name}</li>
+                ))}
+              </ul>
+            </>
+          )}
 
           <button type="submit" disabled={loading}>
             {loading ? "Merging..." : "Merge & Download"}
           </button>
         </form>
 
-        <span className="footer-text">Internal Tool – Tata Electronics</span>
+        <span className="footer-text">
+          Internal Tool – Tata Electronics
+        </span>
       </div>
     </div>
   );

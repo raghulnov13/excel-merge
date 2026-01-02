@@ -3,7 +3,7 @@
 ========================= */
 .container {
   min-height: 100vh;
-  background-image: url("/bg.jpg"); /* put image in /public/bg.jpg */
+  background-image: url("/bg.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -12,6 +12,20 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* =========================
@@ -25,6 +39,14 @@
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   text-align: center;
+  animation: fadeUp 0.5s ease;
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.card:hover,
+.card:focus-within {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  transform: translateY(-2px);
 }
 
 /* =========================
@@ -33,6 +55,7 @@
 .card h1 {
   color: #1a2b6d;
   margin-bottom: 6px;
+  font-size: 26px;
 }
 
 .card p {
@@ -42,30 +65,44 @@
 }
 
 /* =========================
+   FORM LAYOUT
+========================= */
+.card form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================
    FILE INPUT
 ========================= */
-input[type="file"] {
-  /* width: 100%; */
-  margin-bottom: 10px;
+.card input[type="file"] {
+  margin: 12px 0 22px;
+  font-size: 13px;
+  text-align: center;
 }
 
 /* =========================
    FILE LIST
 ========================= */
 .file-count {
+  width: 100%;
   font-size: 13px;
   color: #333;
   margin-bottom: 6px;
+  text-align: center;
 }
 
 .file-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 14px 0;
+  margin: 0 auto 14px;
+  max-width: 260px;
   max-height: 90px;
   overflow-y: auto;
   font-size: 13px;
   text-align: left;
+  animation: fadeUp 0.35s ease;
 }
 
 .file-list li {
@@ -78,7 +115,7 @@ input[type="file"] {
 /* =========================
    BUTTON
 ========================= */
-button {
+/* button {
   width: 100%;
   padding: 12px;
   background-color: #1a2b6d;
@@ -88,51 +125,91 @@ button {
   font-size: 15px;
   cursor: pointer;
   transition: all 0.25s ease;
+  margin-top: 17px;
+  margin-bottom: 16px;
 }
 
 button:hover {
-  background-color: #0f4a1c;
-  transition: ease-in-out;
+  box-shadow: 0 0 12px rgba(26, 43, 109, 0.6);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 button:disabled {
   background-color: #9aa3c7;
   cursor: not-allowed;
   transform: none;
+} */
+button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #1a2b6d, #0f4a1c);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+  margin-bottom: 14px;
 }
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: left 0.35s ease;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
 
 /* =========================
    FOOTER
 ========================= */
 .footer-text {
-  margin-top: 14px;
+  margin-top: 22px;
   font-size: 12px;
   color: #666;
 }
 
-/* Center file input */
-.card form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+  .card {
+    padding: 24px 20px;
+    border-radius: 10px;
+  }
 
-/* Style & center choose files input */
-.card input[type="file"] {
-  margin: 12px 0;
-  font-size: 13px;
-  text-align: center;
-}
+  .card h1 {
+    font-size: 22px;
+  }
 
-/* Center file list container */
-.file-count {
-  width: 100%;
-  text-align: center;
-}
+  .card p {
+    font-size: 13px;
+  }
 
-.file-list {
-  width: 100%;
-  max-width: 260px;
-  margin: 0 auto 14px;
-}
+  button {
+    font-size: 14px;
+    padding: 11px;
+  }
 
+  .file-list {
+    max-width: 100%;
+  }
+}
