@@ -104,6 +104,16 @@ export async function POST(req) {
     }));
     rawData.forEach(row => rawSheet.addRow(row));
 
+    // ✅ AUTO FILTER FOR ALL COLUMNS
+rawSheet.autoFilter = {
+  from: { row: 1, column: 1 },
+  to: { row: 1, column: rawSheet.columnCount },
+};
+
+// (Optional but recommended)
+rawSheet.views = [{ state: "frozen", ySplit: 1 }];
+
+
     // Sheet 2: Status Summary
     const statusSheet = workbook.addWorksheet("Status_Summary");
     statusSheet.addRow(["Status", "Count"]);
